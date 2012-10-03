@@ -513,8 +513,8 @@ class	MXRequestManager
 	 */
 	public function head($apiRes, $apiParams = NULL)
 	{
-		if (empty($apiRes))
-			die('Error: The resource cannot be empty.');
+		// if (empty($apiRes))
+		// 	die('Error: The resource cannot be empty.');
 
 		if (!curl_setopt_array($this->m_curlResource, array(
 			CURLOPT_HTTPGET		=>	TRUE,
@@ -539,8 +539,8 @@ class	MXRequestManager
 	 */
 	public function get($apiRes, $apiParams = NULL)
 	{
-		if (empty($apiRes))
-			die('Error: The resource cannot be empty.');
+		// if (empty($apiRes))
+		// 	die('Error: The resource cannot be empty.');
 
 		if (!curl_setopt($this->m_curlResource, CURLOPT_HTTPGET, TRUE))
 			return ($this->setErrno(-17));
@@ -563,8 +563,8 @@ class	MXRequestManager
 	 */
 	public function put($apiRes, $apiParams = NULL)
 	{
-		if (empty($apiRes))
-			die('Error: The resource cannot be empty.');
+		// if (empty($apiRes))
+		// 	die('Error: The resource cannot be empty.');
 
 		if (!curl_setopt($this->m_curlResource, CURLOPT_PUT, TRUE))
 			return ($this->setErrno(-18));
@@ -587,8 +587,8 @@ class	MXRequestManager
 	 */
 	public function post($apiRes, $apiParams = NULL)
 	{
-		if (empty($apiRes))
-			die('Error: The resource cannot be empty.');
+		// if (empty($apiRes))
+		// 	die('Error: The resource cannot be empty.');
 
 		if (!curl_setopt($this->m_curlResource, CURLOPT_POST, TRUE))
 			return ($this->setErrno(-19));
@@ -611,8 +611,8 @@ class	MXRequestManager
 	 */
 	public function delete($apiRes, $apiParams = NULL)
 	{
-		if (empty($apiRes))
-			die('Error: The resource cannot be empty.');
+		// if (empty($apiRes))
+		// 	die('Error: The resource cannot be empty.');
 
 		if (!curl_setopt($this->m_curlResource, CURLOPT_POST, TRUE))
 			return ($this->setErrno(-20));
@@ -636,7 +636,7 @@ class	MXRequestManager
 	 */
 	public function custom($verb, $apiRes, $apiParams = NULL)
 	{
-		if (empty($verb) || empty($apiRes))
+		if (empty($verb)/* || empty($apiRes)*/)
 			die('Error: The verb/resource cannot be empty.');
 
 		if (!curl_setopt_array($this->m_curlResource, CURLOPT_CUSTOMREQUEST, $verb))
