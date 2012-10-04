@@ -325,6 +325,21 @@ class	MXRequestManager
 	}
 
 	/**
+	 * Set Errno
+	 *
+	 * Set Errno and ALWAYS return FALSE
+	 *
+	 * @param	$errno	The error number to set
+	 *
+	 * @return	FALSE
+	 */
+	protected function setErrno($errno)
+	{
+		$this->m_errno = $errno;
+		return (FALSE);
+	}
+
+	/**
 	 * Raw Response
 	 *
 	 * Get Last Raw Response
@@ -384,18 +399,67 @@ class	MXRequestManager
 	}
 
 	/**
-	 * Set Errno
+	 * Set Custom Option
 	 *
-	 * Set Errno and ALWAYS return FALSE
+	 * Set Custom cURL option
 	 *
-	 * @param	$errno	The error number to set
-	 *
-	 * @return	FALSE
+	 * @param[in]	$key	Constant Key of the option, or Array
+	 * @param[in]	$val	Value of the option. Default NULL if $key is array
+	 * @return		boolean
 	 */
-	protected function setErrno($errno)
+	public function setCustomOption($key, $val = NULL)
 	{
-		$this->m_errno = $errno;
-		return (FALSE);
+		if (empty($key))
+			return (TRUE);
+
+		return (is_array($key) ? curl_setopt_array($this->m_curlResource, $key) : curl_setopt($this->m_curlResource, $key, $val));
+	}
+
+	/**
+	 * Set SSL Checks
+	 *
+	 * Enable or Disable SSL certificate verifications/validity
+	 * Clearly: Accept or Reject invalid certificates
+	 *
+	 * @param[in]	$enabled	FALSE to disable checks and accept invalid certificates. TRUE is Default.
+	 * @return		boolean
+	 */
+	public function setSslChecks($enabled = TRUE)
+	{
+		return ($this->setCustomOption(CURLOPT_SSL_VERIFYPEER, FALSE));
+	}
+
+	/**
+	 * Set Headers
+	 *
+	 * Set custom headers
+	 *
+	 * @param[in]	$headers	Associative array of headers.
+	 * @return		boolean
+	 */
+	public function setHeaders($headers)
+	{
+		$head = array();
+		foreach ($headers as $key => $val)
+			$head[] = "$key: $val";
+
+		return ($this->setCustomOption(CURLOPT_HTTPHEADER, $head));
+	}
+
+	/**
+	 * Set Debug mode
+	 *
+	 * Set the debug mode. When enabled, it prints every PHP warning/errors
+	 *
+	 * @param[in]	$enabled	TRUE to enable.
+	 */
+	public function setDebugMode($enabled)
+	{
+		if ($enabled)
+		{
+			ini_set('error_reporting', 2147483647);
+			ini_set('display_errors', 'stdout');
+		}
 	}
 
 	/**
