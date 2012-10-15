@@ -541,9 +541,12 @@ class	MXRequestManager
 			return ($this->setErrno(-13));
 		if (($this->m_rawResponse = curl_exec($this->m_curlResource)) === FALSE)
 			return ($this->setErrno(-2));
-		if (count(($response = explode("\r\n\r\n", $this->m_rawResponse, 2))) != 2)
+		if (!is_array(($response = explode("\r\n\r\n", $this->m_rawResponse, ($backtrace[1]['function'] == 'put' ? 3 : 2)))))
 			return ($this->setErrno(-14));
 		// ---
+
+		if ($backtrace[1]['function'] == 'put' && count($response) > 2)
+			array_shift($response);
 
 		// Processes the headers + response
 		$this->m_response['raw_header'] = $response[0];
@@ -587,8 +590,6 @@ class	MXRequestManager
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 
@@ -611,8 +612,6 @@ class	MXRequestManager
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 
@@ -630,13 +629,14 @@ class	MXRequestManager
 		// if (empty($apiRes))
 		// 	die('Error: The resource cannot be empty.');
 
-		if (!curl_setopt($this->m_curlResource, CURLOPT_PUT, TRUE))
+		if (!curl_setopt_array($this->m_curlResource, array(
+			CURLOPT_PUT			=> TRUE,
+			CURLOPT_INFILESIZE	=> 0
+		)))
 			return ($this->setErrno(-18));
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 
@@ -659,8 +659,6 @@ class	MXRequestManager
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 
@@ -683,8 +681,6 @@ class	MXRequestManager
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 
@@ -703,13 +699,11 @@ class	MXRequestManager
 		if (empty($verb)/* || empty($apiRes)*/)
 			die('Error: The verb/resource cannot be empty.');
 
-		if (!curl_setopt_array($this->m_curlResource, CURLOPT_CUSTOMREQUEST, $verb))
+		if (!curl_setopt($this->m_curlResource, CURLOPT_CUSTOMREQUEST, $verb))
 			return ($this->setErrno(-21));
 
 		if (($req = $this->processRequest($apiRes, $apiParams)) === FALSE)
 			return (FALSE);
-		elseif ($req === TRUE)
-			return ($this->m_response['raw_body']);
 		return ($req);
 	}
 }
