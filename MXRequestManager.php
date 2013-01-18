@@ -4,7 +4,7 @@
  *
  * @details		REST Request Manager by Max13
  *
- * @version		0.1
+ * @version		0.2
  * @author		Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link		http://rihan.fr/
  * @copyright	http://creativecommons.org/licenses/by-sa/3.0/	CC-by-sa 3.0
@@ -45,7 +45,7 @@ class	MXRequestManager
 	/**
 	 * MXRequestManager Version
 	 */
-	const VERSION = '0.1';
+	const VERSION = '0.2';
 
 	/**
 	 * MXRequestManager internal info
@@ -554,6 +554,11 @@ class	MXRequestManager
 
 		if (($headers = explode("\r\n", $response[0])) === FALSE)
 			return ($this->setErrno(-15));
+
+		// HTTP Code
+		$http_res = explode(' ', $headers[0]);
+		$this->m_response['headers']['Code'] = $http_res[1];
+		// ---
 
 		$nHeader = count($headers);
 		for ($i=1;$i<$nHeader;$i++) // 0 is HTTP Code
