@@ -557,7 +557,7 @@ class	MXRequestManager
 
 		// HTTP Code
 		$http_res = explode(' ', $headers[0]);
-		$this->m_response['headers']['Code'] = $http_res[1];
+		$this->m_response['headers']['Code'] = intval($http_res[1]);
 		// ---
 
 		$nHeader = count($headers);
