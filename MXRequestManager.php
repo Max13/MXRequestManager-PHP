@@ -556,6 +556,7 @@ class	MXRequestManager
 			return ($this->setErrno(-15));
 
 		// HTTP Code
+		$this->m_response['headers']['Status'] = $headers[0];
 		$http_res = explode(' ', $headers[0]);
 		$this->m_response['headers']['Code'] = intval($http_res[1]);
 		// ---
