@@ -1,36 +1,21 @@
-MXRequestManager [for Qt]
+MXRequestManager-PHP
 =========================
 
 Required
 --------
-- Don't care about this one, just to tell you that I haven't built **MXRequestManager** on _Qt >= 5.0_, so as you should know, there is no JSON parser below 5.0. So I'm using another project called [**QtJson**](https://github.com/XXX), which is built and linked with my lib.
+- PHP >= `5.3`
+- APIs which return `JSON` encoded data
+- Brain >= `Working`
 
 How to download
 ---------------
-There are several ways to download **MxRequestManager** for Qt:
+There are several ways to download **MxRequestManager-PHP**:
 
-- Clone the github repository: `$ git clone git://github.com/QtMXRequestManager`
-- Download the zip file on github directly
+- Clone the [github repository](https://github.com/Max13/MXRequestManager-PHP) with `git clone <repo> [<dest>]`
+- Download the zip file on [github](https://github.com/Max13/MXRequestManager-PHP) directly
 - Try to find another one by yourself :/
 
-How to install
------------
-The installation process is really really really simple, and before I forget to write it, it's simple.
-
-- On MacOSX:
-	1. Open a terminal
-	2. Know your `qmake` directory (usually `~/QtSDK/Desktop/Qt/%QtVersion%/gcc/bin`, with **QtVersion** replaced by your version of Qt)
-	3. `quake`, `make` and `make install`, everything should be ok. Here is an example, let's say you're using Qt 4.8.0:
-	
-```
-$ cd ~/Desktop/QtMXRequestManager
-$ ~/QtSDK/Desktop/Qt/4.8.0/gcc/bin/qmake
-$ make
-[Compiling...]
-$ make install
-[Copying files to Qt standard lib directory]
-```
-AAAAAAAAAAAAANNND it's done !
+Then place it where you want (readable location, in order to load it).
 
 How to use
 ----------
@@ -38,60 +23,135 @@ Captain Obvious is so Obvious, that this is truly the most interesting part of t
 
 You can find a Doxygen doc somewhere, you'll just see how to basically use the library.
 
-First of all, let's take a simple example. You have your APIs (http**s**://api.awsome-guy.com) and you want to retrieve a member list from your **users** resource, with a **GET**.
+First of all, let's take a simple example. You have your APIs (`api.awsome-guy.com`) and you want to retrieve a member list from your **users** resource, with a **GET**.
 
 JSON string would be:
 
-    users:[
-    	{
-    		"id": 4,
-    		"username": "foo"
-    	}, {
-    		"id": 12,
-    		"username": "bar"
-    	}
-    ]
-
 ```
-AwsomeApp::AwsomeApp(void)
 {
-	// The MXRequestManager object must be an internal member of the class using it.
-	this->req = new MXRequestManager(QUrl("https://api.awsome-guy.com/"));
-	QPushButton	*button = new QPushButton("Button");
-
-	QObject::connect(button, SIGNAL(clicked()), SLOT(memberlistStartRequest()));
-
-	button->show();
-}
-
-void	AwsomeApp::memberlistStartRequest(void)
-{
-	QObject::connect(this->req, SIGNAL(finished()), SLOT(memberlistRequestFinished()));
-
-	this->req->request("users.json", "GET");
-}
-
-void	AwsomeApp::memberlistRequestFinised(void)
-{
-	QObject::disconnect(this->req, SIGNAL(finished()), this, SLOT(memberlistRequestFinished()));
-
-	MXRequestManager::MXVList const& receivedData = this->req->data().value("users").toList();
-
-	for (int i=0;i<receivedData.size();i++))
-		qDebug() << i+1 << ") Id: " << receivedData.at(i).toMap().value("id")
-				 << ", username: " << receivedData.at(i).toMap().value("id");
+	users:[
+		{
+			"id": 4,
+			"username": "foo"
+		}, {
+			"id": 12,
+			"username": "bar"
+		}
+	]
 }
 ```
--> Note that you'll be working with `QVariant`s, it's quite confusing at the beginning, the code is quite long on each line, but it's still powerful.  
--> `qDebug` should output this to the console:
 
 ```
-1) Id: 4, username: foo
-2) Id: 12, username: bar
+<?php
+// Adapt the path to your installation
+require_once('MXRequestManager-PHP/MXRequestManager.php');
+
+// Instanciate the manager, without the triling slash
+$mx = new MXRequestManager('http://api.awsome-guy.com');
+
+// Prepare your parameters, i.e a token
+$params = array('token' => 'abcdefg');
+
+// Make the request and return the status
+$res = $mx->get('/users', $params);
+?>
 ```
 
-That's it, you're 
+From there, you must verify `$res` because it can be 3 types (so check the type too with `===`)
 
-How to Master the library
+```
+// MXRequestManager error,
+// errno are in the top of the lib file
+if ($res === FALSE)
+	die('Client error: '.$mx->errno());
+if ($res === TRUE) // No JSON, may be a PHP Error
+	die('Parse error: '.$mx->response('body'));
+```
+And after that and your own checks (for example, if the property `errors` is present), you can safely use $res as a `stdClass`:
+
+```
+<?php
+echo 'User n0: ' . $res->users[0]->id . "<br />\n";
+foreach ($res->users as $user)
+	echo $user->id . ' / ' . $user->username . "<br />\n";
+?>
+```
+And this example will output:
+
+```
+User n0: 4
+4 / foo
+12 / bar
+```
+That's it. You can already use `MXRequestManager` !
+
+How to check the entire response ?
+----------------------------------
+This is simple, you can call:
+
+```
+<?php
+echo $mx->rawResponse();
+?>
+```
+
+How to check the headers ?
+--------------------------
+`MXRequestManager` is intelligent and smart enough to allow you to check the headers simply.
+
+Here is an example header:
+
+```
+HTTP/1.1 200 OK
+Server: nginx
+Date: Mon, 04 Feb 2013 21:49:22 GMT
+Content-Type: application/json; charset=utf-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+X-Powered-By: PHP/5.3.21
+Content-Encoding: gzip
+Vary: Accept-Encoding
+```
+
+When processed, every line are split and stored in an array, accessible by a key, corresponding to the part before the semicolon (`:`) of each line, except for the first line which has for key `Status` and the `HTTP code` accessible with in `Code`.
+
+There is an internal multi-dimentional array which contains 2 root keys: `headers` and `body`:
+
+- `headers` contains an associative array of the header's values
+- `body` is the body returned as a `string`
+
+Nothing better than an example:
+
+```
+<?php
+// Adapt the path to your installation
+require_once('MXRequestManager-PHP/MXRequestManager.php');
+
+// Instanciate the manager, without the triling slash
+$mx = new MXRequestManager('http://api.awsome-guy.com');
+
+// Prepare your parameters, i.e a token
+$params = array('token' => 'abcdefg');
+
+// Make the request and return the status
+$res = $mx->get('/users', $params);
+
+// MXRequestManager error,
+// errno are in the top of the lib file
+if ($res === FALSE)
+	die('Client error: '.$mx->errno());
+if ($res === TRUE) // No JSON, may be a PHP Error
+	die('Parse error: '.$mx->response('body'));
+
+echo "HTTP Status: " . $mx->response('headers', 'Status');
+echo "<br />\n";
+echo "HTTP Code: " . $mx->response('headers', 'Code');
+// Since PHP 5.4 you can use $mx->response()['headers']
+echo "<br />\n";
+echo "Response body: " . $mx->response('body');
+?>
+```
+
+Additional notes
 -------------------------
-`RTFM bitch`, which is coming soon.
+A sort of manual will come soon...
