@@ -4,6 +4,7 @@ MXRequestManager-PHP
 Required
 --------
 - PHP >= `5.3`
+- curl
 - APIs which return `JSON` encoded data
 - Brain >= `Working`
 
