@@ -4,7 +4,7 @@
  *
  * @details		REST Request Manager by Max13
  *
- * @version		0.2
+ * @version		0.3
  * @author		Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link		http://rihan.fr/
  * @copyright	http://creativecommons.org/licenses/by-sa/3.0/	CC-by-sa 3.0
@@ -45,7 +45,7 @@ class	MXRequestManager
 	/**
 	 * MXRequestManager Version
 	 */
-	const VERSION = '0.2';
+	const VERSION = '0.3';
 
 	/**
 	 * MXRequestManager internal info
