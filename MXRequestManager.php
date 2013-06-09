@@ -57,7 +57,7 @@ class	MXRequestManager
 	 *
 	 * @var cURL resource
 	 */
-	protected $m_curlResource;
+	protected $m_curlResource = NULL;
 
 	/**
 	 * Base API URL
@@ -120,7 +120,6 @@ class	MXRequestManager
 	function __construct($baseApiUrl = NULL, $apiUser = NULL, $apiPass = NULL)
 	{
 		$curl_version = curl_version();
-		$this->m_curlResource = NULL;
 		$this->m_baseApiUrl = $baseApiUrl;
 		$this->m_authApiUser = $apiUser;
 		$this->m_authApiPass = $apiPass;
