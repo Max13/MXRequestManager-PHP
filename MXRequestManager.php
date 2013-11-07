@@ -4,7 +4,7 @@
  *
  * @details		REST Request Manager by Max13
  *
- * @version		0.3
+ * @version		0.5
  * @author		Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link		http://rihan.fr/
  * @copyright	http://creativecommons.org/licenses/by-sa/3.0/	CC-by-sa 3.0
@@ -45,7 +45,7 @@ class	MXRequestManager
 	/**
 	 * MXRequestManager Version
 	 */
-	const VERSION = '0.3';
+	const VERSION = '0.5';
 
 	/**
 	 * MXRequestManager internal info
@@ -67,6 +67,13 @@ class	MXRequestManager
 	protected $m_baseApiUrl;
 
 	/**
+	 * Last Resource URL
+	 *
+	 * @var Last Resource URL
+	 */
+	protected $m_lastResUrl;
+
+	/**
 	 * Auth API User
 	 *
 	 * @var Auth User
@@ -86,6 +93,13 @@ class	MXRequestManager
 	 * @var Associative Array of Current Request Cookies
 	 */
 	protected $m_cookies = array();
+
+    /**
+     * cURL options
+     *
+     * @var Associative array of OPTION => VALUE
+     */
+    protected $m_curlOptions = array();
 
 	/**
 	 * Last Error Number
@@ -189,6 +203,18 @@ class	MXRequestManager
 	public function setBaseApiUrl($apiUrl)
 	{
 		$this->m_baseApiUrl = $apiUrl;
+	}
+
+	/**
+	 * Last Res URL
+	 *
+	 * Get Last Res URL
+	 *
+	 * @return	The last proceed Res URL
+	 */
+	public function lastResUrl()
+	{
+		return ($this->m_lastResUrl);
 	}
 
 	/**
@@ -310,6 +336,31 @@ class	MXRequestManager
 			}
 		}
 	}
+
+    /**
+     * curlOptions
+     *
+     * Get cURL current options as associative array
+     *
+     * @return  array of current curl options
+     */
+    public function curlOptions()
+    {
+        return ($this->m_curlOptions);
+    }
+
+    /**
+     * setCurlOptions
+     *
+     * Set options for current curl request
+     *
+     * @var associative array of options
+     * @return bool
+     */
+    public function setOptions(array $curl_options)
+    {
+        return (curl_setopt_array($this->m_curlResource, $curl_options));
+    }
 
 	/**
 	 * Errno
@@ -488,7 +539,7 @@ class	MXRequestManager
 	{
 		if (empty($paramsArray))
 			return (NULL);
-		return((($raw) ? '' : '?').http_build_query($paramsArray));
+		return ((($raw) ? '' : '?').http_build_query($paramsArray));
 	}
 
 	// -------------------- //
@@ -509,6 +560,7 @@ class	MXRequestManager
 	 */
 	protected function processRequest($apiRes = NULL, $parameters = NULL, $preventExec = TRUE)
 	{
+		$this->m_lastResUrl = NULL;
 		$this->m_rawResponse = NULL;
 		$this->m_response = array();
 
@@ -524,7 +576,8 @@ class	MXRequestManager
 			$params = NULL;
 		}
 
-		if (!(curl_setopt($this->m_curlResource, CURLOPT_URL, $currentApiURL.($params == NULL ? '' : "?$params"))))
+		$this->m_lastResUrl = $currentApiURL.($params == NULL ? '' : "?$params");
+		if (!(curl_setopt($this->m_curlResource, CURLOPT_URL, $this->m_lastResUrl)))
 			return ($this->setErrno(-12));
 		// ---
 
