@@ -1,5 +1,5 @@
 <?php
-namespace   MX;
+namespace   MX\RestManager;
 
 /**
  * @brief       MXRequestManager
@@ -37,7 +37,7 @@ namespace   MX;
  * -21 = Can't set the request to CUSTOM
  */
 
-class MXRequestManager
+class RestManager
 {
     /**
      * MXRequestManager Name
@@ -432,7 +432,7 @@ class MXRequestManager
         $argv = func_get_args();
         $arg = &$this->m_response;
         for ($i=0; $i<$argc; $i++) {
-            if (array_key_exists($argv[$i], $arg)) {
+            if (array_key_exists($argv[$i], $arg)) {
                 $arg = &$arg[$argv[$i]];
             } else {
                 return (null);
@@ -607,7 +607,7 @@ class MXRequestManager
         // ---
 
         // Makes multiple checks
-        if (!(curl_setopt($this->m_curlResource, CURLOPT_COOKIE, $cookies))) {
+        if (!(curl_setopt($this->m_curlResource, CURLOPT_COOKIE, $cookies))) {
             return ($this->setErrno(-13));
         }
         if (($this->m_rawResponse = curl_exec($this->m_curlResource)) === false) {

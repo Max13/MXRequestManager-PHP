@@ -9,9 +9,10 @@
             "email": "adnan@rihan.fr"
         }
     ],
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0" : {
-            "MX\\REST-Manager" : "src"
+            "MX\\RestManager" : "src/"
         }
     },
     "require": {
