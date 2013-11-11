@@ -1,0 +1,23 @@
+{
+    "name": "max13/rest-manager",
+    "description": "REST request manager for PHP, using php-curl and aiming a at being light and really really really easy to use. Ah BTW, did I mention that it's really easy to use ?",
+    "version": "1.0",
+    "keywords": ["rest", "api","json"],
+    "license": "CC BY NC SA",
+    "authors": [
+        {
+            "name": "Adnan RIHAN",
+            "email": "adnan@rihan.fr"
+        }
+    ],
+    "homepage": "http://github.com/Max13/MXRequestManager-PHP",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0" : {
+            "MX\\RestManager" : "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3.0"
+    }
+}

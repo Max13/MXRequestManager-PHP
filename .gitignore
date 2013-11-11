@@ -1,0 +1,15 @@
+#
+# Composer specific
+#
+composer.phar
+/vendor/
+
+#
+# Mac specific
+#
+.DS_Store
+
+#
+# Sublime-Text specific
+#
+*.sublime-*
