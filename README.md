@@ -1,17 +1,22 @@
 MXRequestManager-PHP
-=========================
+====================
+
+Note
+----
+This is an old README, when the lib wasn't installable by composer. I'm on it, there are only some changes related to autoload, 
 
 Required
 --------
 - PHP >= `5.3`
-- curl
-- APIs which return `JSON` encoded data
+- php-curl (with SSL if required)
+- APIs which return `JSON` encoded data (More structures are coming)
 - Brain >= `Working`
 
 How to download
 ---------------
 There are several ways to download **MxRequestManager-PHP**:
 
+- Install with composer (`"max13/rest-manager": "dev-master"`)
 - Clone the [github repository](https://github.com/Max13/MXRequestManager-PHP) with `git clone <repo> [<dest>]`
 - Download the zip file on [github](https://github.com/Max13/MXRequestManager-PHP) directly
 - Try to find another one by yourself :/
