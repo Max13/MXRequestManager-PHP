@@ -6,7 +6,7 @@ namespace   MX\RestManager;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     0.5.1
+ * @version     0.6
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -47,7 +47,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '0.5.1';
+    const VERSION = '0.6';
 
     /**
      * MXRequestManager internal info
@@ -569,10 +569,16 @@ class RestManager
      *
      * @param[in]   $apiRes=null        The API Resource
      * @param[in]   $parameters=null    The request parameters
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @param[in]   $preventExec=false  true to prevent the request execution (to execute manually)
      * @return      BOOL representing the processing status. true is everything is OK
      */
-    protected function processRequest($apiRes = null, $parameters = null, $preventExec = true)
+    protected function processRequest(
+        $apiRes = null,
+        $parameters = null,
+        $toArray = false,
+        $preventExec = true
+    )
     {
         $this->m_lastResUrl = null;
         $this->m_rawResponse = null;
@@ -647,7 +653,7 @@ class RestManager
         }
 
         if (strncmp($this->m_response['headers']['Content-Type'], 'application/json', 16) == 0) {
-            return (($this->m_response['body'] = json_decode($response[1])));
+            return (($this->m_response['body'] = json_decode($response[1], $toArray)));
         }
         // ---
 
@@ -687,9 +693,10 @@ class RestManager
      *
      * @param[in]   $resource   Resource to be queried
      * @param[in]   $parameters array of parameters to be sent with the query
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @return      The response string
      */
-    public function get($apiRes, $apiParams = null)
+    public function get($apiRes, $apiParams = null, $toArray = false)
     {
         // if (empty($apiRes))
         //  die('Error: The resource cannot be empty.');
@@ -698,7 +705,7 @@ class RestManager
             return ($this->setErrno(-17));
         }
 
-        if (($req = $this->processRequest($apiRes, $apiParams)) === false) {
+        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
             return (false);
         }
         return ($req);
@@ -711,9 +718,10 @@ class RestManager
      *
      * @param[in]   $resource   Resource to be queried
      * @param[in]   $parameters array of parameters to be sent with the query
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @return      The response string
      */
-    public function put($apiRes, $apiParams = null)
+    public function put($apiRes, $apiParams = null, $toArray = false)
     {
         // if (empty($apiRes))
         //  die('Error: The resource cannot be empty.');
@@ -725,7 +733,7 @@ class RestManager
             return ($this->setErrno(-18));
         }
 
-        if (($req = $this->processRequest($apiRes, $apiParams)) === false) {
+        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
             return (false);
         }
         return ($req);
@@ -738,9 +746,10 @@ class RestManager
      *
      * @param[in]   $resource   Resource to be queried
      * @param[in]   $parameters array of parameters to be sent with the query
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @return      The response string
      */
-    public function post($apiRes, $apiParams = null)
+    public function post($apiRes, $apiParams = null, $toArray = false)
     {
         // if (empty($apiRes))
         //  die('Error: The resource cannot be empty.');
@@ -749,7 +758,7 @@ class RestManager
             return ($this->setErrno(-19));
         }
 
-        if (($req = $this->processRequest($apiRes, $apiParams)) === false) {
+        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
             return (false);
         }
         return ($req);
@@ -762,9 +771,10 @@ class RestManager
      *
      * @param[in]   $resource   Resource to be queried
      * @param[in]   $parameters array of parameters to be sent with the query
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @return      The response string
      */
-    public function delete($apiRes, $apiParams = null)
+    public function delete($apiRes, $apiParams = null, $toArray = false)
     {
         // if (empty($apiRes))
         //  die('Error: The resource cannot be empty.');
@@ -773,7 +783,7 @@ class RestManager
             return ($this->setErrno(-20));
         }
 
-        if (($req = $this->processRequest($apiRes, $apiParams)) === false) {
+        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
             return (false);
         }
 
@@ -788,9 +798,10 @@ class RestManager
      * @param[in]   $verb       Custom request verb
      * @param[in]   $resource   Resource to be queried
      * @param[in]   $parameters array of parameters to be sent with the query
+     * @param[in]   $toArray    Output the result as an array instead of object
      * @return      The response string
      */
-    public function custom($verb, $apiRes, $apiParams = null)
+    public function custom($verb, $apiRes, $apiParams = null, $toArray = false)
     {
         if (empty($verb)/* || empty($apiRes)*/) {
             die('Error: The verb/resource cannot be empty.');
@@ -800,7 +811,7 @@ class RestManager
             return ($this->setErrno(-21));
         }
 
-        if (($req = $this->processRequest($apiRes, $apiParams)) === false) {
+        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
             return (false);
         }
 
