@@ -6,7 +6,8 @@
     "authors": [
         {
             "name": "Adnan RIHAN",
-            "email": "adnan@rihan.fr"
+            "email": "adnan@rihan.fr",
+            "role": "Developer"
         }
     ],
     "homepage": "http://github.com/Max13/MXRequestManager-PHP",
@@ -16,6 +17,7 @@
         }
     },
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "ext-curl": "*"
     }
 }
