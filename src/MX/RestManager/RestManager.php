@@ -6,7 +6,7 @@ namespace   MX\RestManager;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0.0
+ * @version     1.0.1
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -47,7 +47,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0.0';
+    const VERSION = '1.0.1';
 
     /**
      * MXRequestManager internal info
@@ -140,8 +140,6 @@ class RestManager
         $this->m_authApiUser = $apiUser;
         $this->m_authApiPass = $apiPass;
         $this->m_cookies = array();
-        // $this->m_rawResponse = null; // Moved to processRequest()
-        // $this->m_response = array(); // Moved to processRequest()
         self::$internalInfo['curl'] = curl_version();
 
         if (!($this->m_curlResource = curl_init($this->m_baseApiUrl))) {
@@ -161,7 +159,6 @@ class RestManager
             CURLOPT_TIMEOUT             =>  15,
             CURLOPT_ENCODING            =>  '',
             CURLOPT_USERPWD             =>  "$apiUser:$apiPass"))) {
-
             die($this->lastCurlError());
         }
     }
@@ -776,18 +773,7 @@ class RestManager
      */
     public function delete($apiRes, $apiParams = null, $toArray = false)
     {
-        // if (empty($apiRes))
-        //  die('Error: The resource cannot be empty.');
-
-        if (!curl_setopt($this->m_curlResource, CURLOPT_POST, true)) {
-            return ($this->setErrno(-20));
-        }
-
-        if (($req = $this->processRequest($apiRes, $apiParams, $toArray)) === false) {
-            return (false);
-        }
-
-        return ($req);
+        return ($this->custom('DELETE', $apiRes, $apiParams, $toArray));
     }
 
     /**
