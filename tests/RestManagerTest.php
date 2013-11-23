@@ -20,8 +20,8 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
             ),
         );
         $this->m_headers = array(
-            'X-TEST-HEADER1'    => 'VALUE1',
-            'X-TEST-HEADER2'    => 'VALUE2',
+            'X-Test-Header1'    => 'VALUE1',
+            'X-Test-Header2'    => 'VALUE2',
         );
     }
 
@@ -37,6 +37,7 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
     public function testGetWithSuccess()
     {
         $mx = new RestManager($this->m_url);
+        $mx->setHeaders($this->m_headers);
 
         $res = $mx->get($this->m_path, $this->m_params, true);
 
@@ -47,11 +48,16 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('GET', $res['self']['REQUEST_METHOD']);
         $this->assertEquals($this->m_params, $res['query_parameters']['GET']);
         $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
     }
 
     public function testPostWithSuccess()
     {
         $mx = new RestManager($this->m_url);
+        $mx->setHeaders($this->m_headers);
 
         $res = $mx->post($this->m_path, $this->m_params, true);
 
@@ -62,11 +68,16 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('POST', $res['self']['REQUEST_METHOD']);
         $this->assertEquals($this->m_params, $res['query_parameters']['POST']);
         $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
     }
 
     public function testPutWithSuccess()
     {
         $mx = new RestManager($this->m_url);
+        $mx->setHeaders($this->m_headers);
 
         $res = $mx->put($this->m_path, $this->m_params, true);
 
@@ -77,11 +88,16 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('PUT', $res['self']['REQUEST_METHOD']);
         $this->assertEquals($this->m_params, $res['query_parameters']['REQUEST']);
         $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
     }
 
     public function testDeleteWithSuccess()
     {
         $mx = new RestManager($this->m_url);
+        $mx->setHeaders($this->m_headers);
 
         $res = $mx->delete($this->m_path, $this->m_params, true);
 
@@ -92,11 +108,16 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('DELETE', $res['self']['REQUEST_METHOD']);
         $this->assertEquals($this->m_params, $res['query_parameters']['REQUEST']);
         $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
     }
 
     public function testCustomVerbWithSuccess()
     {
         $mx = new RestManager($this->m_url);
+        $mx->setHeaders($this->m_headers);
         $verb = 'ACTION';
 
         $res = $mx->custom($verb, $this->m_path, $this->m_params, true);
@@ -108,5 +129,9 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($verb, $res['self']['REQUEST_METHOD']);
         $this->assertEquals($this->m_params, $res['query_parameters']['REQUEST']);
         $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
     }
 }
