@@ -1,6 +1,6 @@
 <?php
 
-use MX\RestManager\RestManager;
+use MX\RestManager;
 
 ini_set('error_reporting', 2147483647);
 ini_set('display_errors', '1');
