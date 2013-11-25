@@ -74,6 +74,27 @@ class RestManagerTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testPostJsonWithSuccess()
+    {
+        $mx = new RestManager($this->m_url);
+        $mx->setHeaders(array_merge($this->m_headers, array('Content-Type' => 'application/json')));
+
+        $res = $mx->post($this->m_path, json_encode($this->m_params), true);
+
+        $this->assertEquals(200, $mx->response('headers', 'Code'));
+        $this->assertFalse($res === false);
+        $this->assertFalse($res === true);
+        $this->assertInternalType('array', $res);
+        $this->assertEquals('POST', $res['self']['REQUEST_METHOD']);
+        $this->assertEquals($mx->userAgent(), $res['self']['HEADERS']['User-Agent']);
+        $this->assertEquals('application/json', $res['self']['CONTENT_TYPE']);
+        $this->assertJsonStringEqualsJsonString(json_encode($this->m_params), $res['body']);
+        foreach ($this->m_headers as $key => $val) {
+            $this->assertArrayHasKey($key, $res['self']['HEADERS']);
+            $this->assertEquals($val, $res['self']['HEADERS'][$key]);
+        }
+    }
+
     public function testPutWithSuccess()
     {
         $mx = new RestManager($this->m_url);

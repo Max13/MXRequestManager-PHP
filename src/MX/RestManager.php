@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p2
+ * @version     1.0-p3
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -47,7 +47,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0-p2';
+    const VERSION = '1.0-p3';
 
     /**
      * MXRequestManager internal info
@@ -583,7 +583,7 @@ class RestManager
 
         // Sets the resource and the parameters
         $currentApiURL = $this->m_baseApiUrl.$apiRes;
-        $params = $this->toQueryString($parameters, true);
+        $params = is_string($parameters) ? $parameters : $this->toQueryString($parameters, true);
 
         $backtrace = (PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 4)
                      ? debug_backtrace(0, 2) : debug_backtrace();
