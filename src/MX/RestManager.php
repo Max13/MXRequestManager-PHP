@@ -1,5 +1,4 @@
-<?php
-namespace   MX;
+<?php namespace MX;
 
 /**
  * @brief       RestManager
