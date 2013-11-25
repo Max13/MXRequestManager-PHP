@@ -13,7 +13,7 @@
     "homepage": "http://github.com/Max13/MXRequestManager-PHP",
     "autoload": {
         "psr-0" : {
-            "MX\\" : "src/"
+            "" : "src/"
         }
     },
     "require": {
