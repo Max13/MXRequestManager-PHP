@@ -2,11 +2,11 @@
 namespace   MX;
 
 /**
- * @brief       MXRequestManager
+ * @brief       RestManager
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0.2
+ * @version     1.0-p2
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -47,7 +47,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0.2';
+    const VERSION = '1.0-p2';
 
     /**
      * MXRequestManager internal info
