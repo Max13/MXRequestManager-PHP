@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p3
+ * @version     1.0-p4
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -47,7 +47,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0-p3';
+    const VERSION = '1.0-p4';
 
     /**
      * MXRequestManager internal info
@@ -452,8 +452,8 @@ class RestManager
      */
     public function globalInfo($option = null)
     {
-        $globalInfo = curl_getinfo($this->m_curlResource);
-        return (empty($option) ? $globalInfo : $globalInfo[$option]);
+        $globalInfo = curl_getinfo($this->m_curlResource, is_int($option) ? $option : 0);
+        return (is_string($option) ? $globalInfo[$option] : $globalInfo);
     }
 
     /**
