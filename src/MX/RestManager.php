@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p5
+ * @version     1.0-p6
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -48,7 +48,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0-p5';
+    const VERSION = '1.0-p6';
 
     /**
      * MXRequestManager internal info
@@ -623,14 +623,12 @@ class RestManager
             $this->m_curlResource,
             CURLINFO_CONTENT_LENGTH_DOWNLOAD
         ));
-        if ($contentSize === -1) {                  // Not Reported or no body
-            if ($responseSize === $headersSize) {   // No body
-                $contentSize = 0;
-            } else {                                // Not reported -> calculate
-                $contentSize = $responseSize - $headersSize;
-            }
+        $contentSize = $contentSize  === -1 ? 0 : $contentSize;
+        if ($contentSize === 0 && $responseSize !== $headersSize) {
+            // Not reported -^                  ^^^-- But there is a body
+            $contentSize = $responseSize - $headersSize;
         }
-        if ($responseSize != ($headersSize + $contentSize)) {
+        if ($responseSize !== ($headersSize + $contentSize)) {
             return ($this->setErrno(-22));
         }
         $rawHeaders = $headersSize ? trim(substr($rawResponse, 0, $headersSize)) : null;
