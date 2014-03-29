@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p4
+ * @version     1.0-p5
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -27,7 +27,7 @@ namespace   MX;
  * -11 = Can't set POSTFIELDS
  * -12 = Can't set URL
  * -13 = Can't set COOKIES
- * -14 = Can't separate headers and body from response (Bad response)
+ * -14 = Can't separate headers (Bad response ?)
  * -15 = Can't find headers (Bad headers)
  * -16 = Can't set the request to HEAD
  * -17 = Can't set the request to GET
@@ -35,6 +35,7 @@ namespace   MX;
  * -19 = Can't set the request to POST
  * -20 = Can't set the request to DELETE
  * -21 = Can't set the request to CUSTOM
+ * -22 = Bad content size
  */
 
 class RestManager
@@ -47,7 +48,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0-p4';
+    const VERSION = '1.0-p5';
 
     /**
      * MXRequestManager internal info
@@ -575,8 +576,7 @@ class RestManager
         $parameters = null,
         $toArray = false,
         $preventExec = true
-    )
-    {
+    ) {
         $this->m_lastResUrl = null;
         $this->m_rawResponse = null;
         $this->m_response = array();
@@ -616,24 +616,36 @@ class RestManager
         if (($this->m_rawResponse = curl_exec($this->m_curlResource)) === false) {
             return ($this->setErrno(-2));
         }
-        if (!is_array(($response = explode(
-            "\r\n\r\n",
-            $this->m_rawResponse,
-            ($backtrace[1]['function'] == 'put' ? 3 : 2)
-        )))) {
+        $rawResponse = $this->m_rawResponse;
+        $responseSize = strlen($rawResponse);
+        $headersSize = curl_getinfo($this->m_curlResource, CURLINFO_HEADER_SIZE);
+        $contentSize = intval(curl_getinfo(
+            $this->m_curlResource,
+            CURLINFO_CONTENT_LENGTH_DOWNLOAD
+        ));
+        if ($contentSize === -1) {                  // Not Reported or no body
+            if ($responseSize === $headersSize) {   // No body
+                $contentSize = 0;
+            } else {                                // Not reported -> calculate
+                $contentSize = $responseSize - $headersSize;
+            }
+        }
+        if ($responseSize != ($headersSize + $contentSize)) {
+            return ($this->setErrno(-22));
+        }
+        $rawHeaders = $headersSize ? trim(substr($rawResponse, 0, $headersSize)) : null;
+        $rawBody = $contentSize ? trim(substr($rawResponse, 0 - $contentSize)) : null;
+        if (!is_array(($rawHeaders = explode("\r\n\r\n", $rawHeaders)))) {
             return ($this->setErrno(-14));
         }
+        $lastHeaders = $rawHeaders[count($rawHeaders) - 1];
         // ---
 
-        if ($backtrace[1]['function'] == 'put' && count($response) > 2) {
-            array_shift($response);
-        }
-
         // Processes the headers + response
-        $this->m_response['raw_header'] = $response[0];
-        $this->m_response['raw_body'] = $response[1];
+        $this->m_response['raw_header'] = $lastHeaders;
+        $this->m_response['raw_body'] = $rawBody;
 
-        if (($headers = explode("\r\n", $response[0])) === false) {
+        if (($headers = explode("\r\n", $lastHeaders)) === false) {
             return ($this->setErrno(-15));
         }
 
@@ -648,9 +660,8 @@ class RestManager
             $headerGroup = explode(': ', $headers[$i], 2);
             $this->m_response['headers'][$headerGroup[0]] = $headerGroup[1];
         }
-
         if (strncmp($this->m_response['headers']['Content-Type'], 'application/json', 16) == 0) {
-            return (($this->m_response['body'] = json_decode($response[1], $toArray)));
+            return (($this->m_response['body'] = json_decode($rawBody, $toArray)));
         }
         // ---
 
