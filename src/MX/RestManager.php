@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p6
+ * @version     1.0-p7
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -48,7 +48,7 @@ class RestManager
     /**
      * MXRequestManager Version
      */
-    const VERSION = '1.0-p6';
+    const VERSION = '1.0-p7';
 
     /**
      * MXRequestManager internal info
@@ -656,6 +656,9 @@ class RestManager
         $nHeader = count($headers);
         for ($i=1; $i<$nHeader; $i++) { // 0 is HTTP Code
             $headerGroup = explode(': ', $headers[$i], 2);
+            if ($headerGroup[0] == 'Content-type') {
+                $headerGroup[0] = 'Content-Type';
+            }
             $this->m_response['headers'][$headerGroup[0]] = $headerGroup[1];
         }
         if (strncmp($this->m_response['headers']['Content-Type'], 'application/json', 16) == 0) {
