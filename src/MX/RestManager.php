@@ -6,7 +6,7 @@ namespace   MX;
  *
  * @details     REST Request Manager by Max13
  *
- * @version     1.0-p7
+ * @version     1.0-p8
  * @author      Adnan "Max13" RIHAN <adnan@rihan.fr>
  * @link        http://rihan.fr/
  * @copyright   http://creativecommons.org/licenses/by-sa/3.0/  CC-by-sa 3.0
@@ -616,34 +616,14 @@ class RestManager
         if (($this->m_rawResponse = curl_exec($this->m_curlResource)) === false) {
             return ($this->setErrno(-2));
         }
-        $rawResponse = $this->m_rawResponse;
-        $responseSize = strlen($rawResponse);
-        $headersSize = curl_getinfo($this->m_curlResource, CURLINFO_HEADER_SIZE);
-        $contentSize = intval(curl_getinfo(
-            $this->m_curlResource,
-            CURLINFO_CONTENT_LENGTH_DOWNLOAD
-        ));
-        $contentSize = $contentSize  === -1 ? 0 : $contentSize;
-        if ($contentSize === 0 && $responseSize !== $headersSize) {
-            // Not reported -^                  ^^^-- But there is a body
-            $contentSize = $responseSize - $headersSize;
-        }
-        if ($responseSize !== ($headersSize + $contentSize)) {
-            return ($this->setErrno(-22));
-        }
-        $rawHeaders = $headersSize ? trim(substr($rawResponse, 0, $headersSize)) : null;
-        $rawBody = $contentSize ? trim(substr($rawResponse, 0 - $contentSize)) : null;
-        if (!is_array(($rawHeaders = explode("\r\n\r\n", $rawHeaders)))) {
-            return ($this->setErrno(-14));
-        }
-        $lastHeaders = $rawHeaders[count($rawHeaders) - 1];
+        $rawResponse = explode("\r\n\r\n", $this->m_rawResponse, 2);
         // ---
 
         // Processes the headers + response
-        $this->m_response['raw_header'] = $lastHeaders;
-        $this->m_response['raw_body'] = $rawBody;
+        $this->m_response['raw_header'] = $rawResponse[0];
+        $this->m_response['raw_body'] = $rawResponse[1];
 
-        if (($headers = explode("\r\n", $lastHeaders)) === false) {
+        if (($headers = explode("\r\n", $this->m_response['raw_header'])) === false) {
             return ($this->setErrno(-15));
         }
 
@@ -661,8 +641,9 @@ class RestManager
             }
             $this->m_response['headers'][$headerGroup[0]] = $headerGroup[1];
         }
-        if (strncmp($this->m_response['headers']['Content-Type'], 'application/json', 16) == 0) {
-            return (($this->m_response['body'] = json_decode($rawBody, $toArray)));
+
+        if (($this->m_response['body'] = json_decode($this->m_response['raw_body'], $toArray)) !== null) {
+            return $this->m_response['body'];
         }
         // ---
 
